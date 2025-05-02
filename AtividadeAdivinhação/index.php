@@ -8,14 +8,14 @@
         body {
             margin: 0;
             padding: 0;
-            background-color: #000;
+            background-color: black;
             color: white;
             font-family: Arial, sans-serif;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            height: 100vh;
+            height: 100%;
             text-align: center;
         }
 
@@ -56,15 +56,25 @@
         a:hover {
             background-color: #f0c000;
         }
+
+        .lista-jogadores {
+            font-size: 1.2em;
+            margin-bottom: 20px;
+        }
+
+        .lista-jogadores ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .lista-jogadores li {
+            margin-bottom: 10px;
+        }
     </style>
 </head>
 <body>
 
 <?php
-
-    require_once("modelo/Palpite.php");
-
-
     $dadosPersonagens = [
         ["Pelé", "https://www.fflch.usp.br/sites/fflch.usp.br/files/inline-images/PEL%C3%89%20CAPA.jpg", "Rei do Futebol, tricampeão mundial pelo Brasil."],
         ["Maradona", "https://s2-gshow.glbimg.com/mc0YodfFisnnx0vxdJrL2LhDFNU=/0x0:1080x1080/984x0/smart/filters:strip_icc()/i.s3.glbimg.com/v1/AUTH_e84042ef78cb4708aeebdf1c68c6cbd6/internal_photos/bs/2020/5/N/VjZzDMQseTspSWEdEGlA/maradona.jpg", "Famoso pela 'Mão de Deus' e por driblar meio time."],
@@ -83,8 +93,22 @@
         $palpites[] = new Palpite($dado[0], $dado[1], $dado[2]);
     }
 
+    echo '<div class="lista-jogadores">';
+    echo '<h2>Lista de Jogadores:</h2>';
+    echo '<ul>';
+    foreach ($palpites as $index => $palpite) {
+        echo '<li>' . ($index + 1) . ' - ' . $palpite->getNome() . '</li>';
+    }
+    echo '</ul>';
+    echo '</div>';
 
-    $correto = rand(0, 9);
+    session_start();
+
+    if (!isset($_SESSION['correto'])) {
+        $_SESSION['correto'] = rand(0, 9);
+    }
+
+    $correto = $_SESSION['correto'];
 
     if (!isset($_GET['palpite'])) {
         echo "<h2>⚠ Você precisa informar um palpite (1 a 10) na URL.</h2>";
@@ -100,6 +124,8 @@
         echo '<h3>O jogador é: <strong>' . $palpites[$correto]->getNome() . '</strong></h3>';
         echo '<img class="imagem-jogador" src="' . $palpites[$correto]->getImage() . '" alt="Imagem do Jogador">';
         echo '</div>';
+
+        session_destroy();
     } else {
         echo '<div class="erro">';
         echo '<h2>Você errou!</h2>';
@@ -109,8 +135,7 @@
     
     echo '<a href="index.php">Tentar Novamente</a>';
 
-    ?>
+?>
 
 </body>
 </html>
-
